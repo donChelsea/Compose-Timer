@@ -44,7 +44,6 @@ class MainViewModel : ViewModel() {
             override fun onTick(millisRemaining: Long) {
                 val progressValue = millisRemaining.toFloat() / TimerUtil.TIME_COUNTDOWN
                 handleTimerValues(true, millisRemaining.formatTime(), progressValue, false)
-                viewModelScope.launch { _celebrate.emit(false) }
             }
 
             override fun onFinish() {

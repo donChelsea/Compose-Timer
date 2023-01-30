@@ -9,6 +9,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -18,15 +20,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composetimer.R
 import com.example.composetimer.ui.main.MainViewModel
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.emitter.Emitter
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun CountDownScreen(viewModel: MainViewModel) {
     val state = viewModel.state.collectAsState()
-    var celebrate = false
+    val celebrate = remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = viewModel.celebrate) {
+    LaunchedEffect(key1 = Unit) {
         viewModel.celebrate.collect {
-            celebrate = it
+            celebrate.value = it
         }
     }
 
@@ -34,10 +39,9 @@ fun CountDownScreen(viewModel: MainViewModel) {
         time = state.value.time,
         progress = state.value.progress,
         isRunning = state.value.isRunning,
-        celebrate = celebrate,
-    ) {
-        viewModel.handleCountDownTimer()
-    }
+        celebrate = celebrate.value,
+        optionSelected = { viewModel.handleCountDownTimer() }
+    )
 }
 
 @Composable
@@ -46,7 +50,7 @@ fun CountDownView(
     progress: Float,
     isRunning: Boolean,
     celebrate: Boolean,
-    optionSelected: () -> Unit
+    optionSelected: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -55,7 +59,7 @@ fun CountDownView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        if (celebrate) ShowCelebration()
+//        if (celebrate) Party(emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(30))
 
         Text(
             text = "Timer",
